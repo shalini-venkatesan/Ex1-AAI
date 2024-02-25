@@ -122,9 +122,9 @@ plt.show()
 ```
 ## Output:
 #### Bands for variables:
-![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/1328236d-bd64-4f04-a8fe-94cb020e582f)
+![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/900e6160-3859-4dc8-8675-0a4b8faa80df)
 
-![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/862b48ae-2c19-4c94-925f-db4a4460fec1)
+![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/323ea7fc-bfa5-46b7-863e-0e822d8a6c00)
 
 #### Graph:
 
