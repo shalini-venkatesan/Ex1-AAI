@@ -23,7 +23,7 @@ Step 13:Generate the graph using networkx<br/>
 Step 14:Update margins and display the graph using matplotlib.pyplot<br/>
 
 ## Program:
-### Import the needed Libaries:
+#### Import the needed Libaries:
 ```
 import networkx as nx
 import pandas as pd
@@ -36,23 +36,23 @@ from pybbn.graph.variable import Variable
 from pybbn.pptc.inferencecontroller import InferenceController
 pd.options.display.max_columns=50
 ```
-### Read the Dataset:
+#### Read the Dataset:
 ```
 df=pd.read_csv('weatherAUS.csv',encoding='utf-8')
 df=df[pd.isnull(df['RainTomorrow'])==False]
 ```
-### Filling in missing values:
+#### Filling in missing values:
 ```
 df=df.fillna(df.mean())
 ```
-### Bands for variables:
+#### Bands for variables:
 ```
 df['WindGustSpeedCat']=df['WindGustSpeed'].apply(lambda x: '0.<=40'   if x<=40 else '1.40-50' if 40<x<=50 else '2.>50')
-df['Humidity9amCat']=df['Humidity9am'].apply(lambda x: '1.>60' if x>60 else '0.<=60')
-df['Humidity3pmCat']=df['Humidity3pm'].apply(lambda x: '1.>60' if x>60 else '0.<=60')
+df['Pressure9amCat']=df['Pressure9am'].apply(lambda x: '1.>1000' if x>1000 else '0.<=1000')
+df['Pressure3pmCat']=df['Pressure3pm'].apply(lambda x: '1.>1000' if x>1000 else '0.<=1000')
 print(df)
 ```
-### Function helps to calculate probability distribution:
+#### Function helps to calculate probability distribution:
 ```
 def probs(data, child, parent1=None, parent2=None):
     if parent1==None:
@@ -69,49 +69,51 @@ def probs(data, child, parent1=None, parent2=None):
     else: print("Error in Probability Frequency Calculations")
     return prob
 ```
-### Function to Automatically Calculate Probabilities:
+#### Function to Automatically Calculate Probabilities:
 ```
-H9am = BbnNode(Variable(0, 'H9am', ['<=60', '>60']), probs(df, child='Humidity9amCat'))
-H3pm = BbnNode(Variable(1, 'H3pm', ['<=60', '>60']), probs(df, child='Humidity3pmCat', parent1='Humidity9amCat'))
+P9am = BbnNode(Variable(0, 'P9am', ['<=1000', '>1000']), probs(df, child='Pressure9amCat'))
+P3pm = BbnNode(Variable(1, 'P3pm', ['<=1000', '>1000']), probs(df, child='Pressure3pmCat', parent1='Pressure9amCat'))
 W = BbnNode(Variable(2, 'W', ['<=40', '40-50', '>50']), probs(df, child='WindGustSpeedCat'))
-RT = BbnNode(Variable(3, 'RT', ['No', 'Yes']), probs(df, child='RainTomorrow', parent1='Humidity3pmCat', parent2='WindGustSpeedCat'))
+RT = BbnNode(Variable(3, 'RT', ['No', 'Yes']), probs(df, child='RainTomorrow', parent1='Pressure3pmCat', parent2='WindGustSpeedCat'))
 ```
-### Network:
+#### Network:
 ```
 bbn = Bbn() \
-    .add_node(H9am) \
-    .add_node(H3pm) \
+    .add_node(P9am) \
+    .add_node(P3pm) \
     .add_node(W) \
     .add_node(RT) \
-    .add_edge(Edge(H9am, H3pm, EdgeType.DIRECTED)) \
-    .add_edge(Edge(H3pm, RT, EdgeType.DIRECTED)) \
+    .add_edge(Edge(P9am, P3pm, EdgeType.DIRECTED)) \
+    .add_edge(Edge(P3pm, RT, EdgeType.DIRECTED)) \
     .add_edge(Edge(W, RT, EdgeType.DIRECTED))
 ```
-### BBN to Join tree:
+#### BBN to Join tree:
 ```
 join_tree = InferenceController.apply(bbn)
 ```
-### Setting node Positions:
+#### Setting node Positions:
 ```
-pos={0: (-1,0), 1: (-1, 0.5), 2: (1, 0), 3:(0,-0.5)}
+pos={0: (-1,2), 1: (-1,0.5), 2: (1,0.5), 3:(0,-1)}
 ```
-### Setting Options for Graph looks:
+#### Setting Options for Graph looks:
 ```
 options = {
     "font_size": 16,
-    "node_size": 4000,
-    "node_color": "pink",
-    "edgecolors": "blue",
-    "edge_color": "green",
+    "node_size": 5000,
+    "node_color": "#82DEFF",
+    "edgecolors": "#82A0FF",
+    "edge_color": "black",
     "linewidths": 5,
     "width": 5,}
+
 ```
-### Graph Generation:
+#### Graph Generation:
 ```
 n, d = bbn.to_nx_graph()
 nx.draw(n, with_labels=True, labels=d, pos=pos, **options)
+
 ```
-### Margin and printing Graph:
+#### Margin and printing Graph:
 ```
 ax = plt.gca()
 ax.margins(0.10)
@@ -119,14 +121,14 @@ plt.axis("off")
 plt.show()
 ```
 ## Output:
-### Bands for variables:
-![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/ae0763df-b5d7-4f55-892b-893f832d477d)
-![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/517af243-c3e4-487e-b01c-99d8e04397d4)
+#### Bands for variables:
+![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/1328236d-bd64-4f04-a8fe-94cb020e582f)
 
-### Graph:
+![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/862b48ae-2c19-4c94-925f-db4a4460fec1)
 
-![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/efce4f22-071d-4182-9753-b6657ef8fe90)
+#### Graph:
 
+![image](https://github.com/shalini-venkatesan/Ex1-AAI/assets/118720291/49c58799-e7e2-4987-bf0b-c390ee5249dd)
 
 ## Result:
 Thus a Bayesian Network is generated using Python
